@@ -62,7 +62,7 @@ FastAPI Backend
 
 ### ⚡ Backend API
 
-[FastAPI Backend](https://ai-research-intelligence-t3do.onrender.com)
+[FastAPI Backend](https://ai-research-intelligence-t3do.onrender.com/)
 
 ### 📖 API Documentation
 
@@ -235,5 +235,5 @@ Cloud Computing Learner
 
 ```
 
-**Now replace your current `README.md` with this complete version and save it.** Then tell me **“saved”** and we'll push it to GitHub.
+**This is the version I recommend committing.** Save it as `README.md`. Then we can do the Git commands to commit and push it.
 ```
