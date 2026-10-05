@@ -1,82 +1,141 @@
 # 🧠 AI Research Intelligence Platform
 
-An AI-powered research assistant that allows users to upload PDF research documents, index their content, ask questions, and receive grounded AI answers with document and page-level source citations.
+An AI-powered research assistant that allows users to upload research papers and PDF documents, ask questions about their content, and receive grounded AI-generated answers with page-level source references.
 
-## ✨ Features
-
-* 📄 Upload and process research PDFs
-* 🔎 Extract text while preserving page numbers
-* ✂️ Intelligent text chunking
-* 🧠 ChromaDB vector search
-* 🤖 Gemini-powered research answers
-* 📚 Multiple research document support
-* 📑 Document and page-level source citations
-* 📊 Research knowledge-base statistics
-* 📂 Indexed research document library
-* ⚡ FastAPI backend
-* 🎨 Interactive Streamlit dashboard
-
-## 🛠️ Tech Stack
-
-* Python
-* Streamlit
-* FastAPI
-* Google Gemini API
-* ChromaDB
-* PyMuPDF
-* Python-dotenv
-* Requests
-
-## 🏗️ Architecture
-
-```text
-User
-  │
-  ▼
-Streamlit Frontend
-  │
-  ▼
-FastAPI Backend
-  │
-  ├── PDF Extraction
-  │
-  ├── Text Chunking
-  │
-  ├── ChromaDB Retrieval
-  │
-  └── Gemini AI
-          │
-          ▼
-   Grounded Research Answer
-          │
-          ▼
-   Document + Page Sources
-```
+The platform combines **Retrieval-Augmented Generation (RAG)**, **ChromaDB**, **Google Gemini**, **FastAPI**, and **Streamlit** to create an intelligent research document analysis system.
 
 ## 🚀 Live Demo
 
-### 🌐 Frontend
+### Frontend
 
-[AI Research Intelligence Platform](https://ai-research-intelligence-zqcpbjyjwsva64syxgd8hr.streamlit.app/)
+https://ai-research-intelligence-zqcpbjyjwsva64syxgd8hr.streamlit.app/
 
-### ⚡ Backend API
+### Backend API
 
-[FastAPI Backend](https://ai-research-intelligence-t3do.onrender.com/)
+https://ai-research-intelligence-t3do.onrender.com/
 
-### 📖 API Documentation
+### API Health Check
 
-[FastAPI Swagger Documentation](https://ai-research-intelligence-t3do.onrender.com/docs)
+https://ai-research-intelligence-t3do.onrender.com/health
 
-### ❤️ Backend Health
+## ✨ Features
 
-[Health Check](https://ai-research-intelligence-t3do.onrender.com/health)
+* 📄 Upload research PDF documents
+* 🔎 Extract text from PDF files
+* ✂️ Split documents into overlapping text chunks
+* 🧠 Store document knowledge using ChromaDB
+* 🔍 Retrieve relevant research content using semantic search
+* 🤖 Generate AI-powered answers using Google Gemini
+* 📚 Provide document and page-level source references
+* 📊 Display research knowledge-base statistics
+* 📁 View indexed research documents
+* 🌙 Modern dark-themed dashboard
+* ✨ Animated and responsive Streamlit interface
+* ⚡ FastAPI backend for document processing and AI queries
+* ☁️ Publicly deployed frontend and backend
 
-## 📁 Project Structure
+## 🛠️ Tech Stack
+
+### Programming Language
+
+* Python
+
+### Frontend
+
+* Streamlit
+
+### Backend
+
+* FastAPI
+* Uvicorn
+
+### AI
+
+* Google Gemini API
+* Retrieval-Augmented Generation (RAG)
+
+### Document Processing
+
+* PyMuPDF
+
+### Vector Database
+
+* ChromaDB
+
+### Data Validation
+
+* Pydantic
+
+### Development Tools
+
+* Git
+* GitHub
+* VS Code
+
+### Deployment
+
+* Streamlit Cloud
+* Render
+
+## 🏗️ System Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │       User           │
+                    │  Upload PDF / Query  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │  Streamlit Frontend  │
+                    │     Dashboard        │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    FastAPI Backend   │
+                    │  REST API Endpoints  │
+                    └──────────┬───────────┘
+                               │
+                    ┌──────────┴───────────┐
+                    ▼                      ▼
+          ┌──────────────────┐    ┌──────────────────┐
+          │   PDF Processing │    │   Question       │
+          │   PyMuPDF        │    │   Processing     │
+          └────────┬─────────┘    └────────┬─────────┘
+                   │                       │
+                   ▼                       ▼
+          ┌──────────────────┐    ┌──────────────────┐
+          │ Text Chunking    │    │ ChromaDB Search  │
+          └────────┬─────────┘    └────────┬─────────┘
+                   │                       │
+                   ▼                       ▼
+          ┌──────────────────────────────────────────┐
+          │              ChromaDB                    │
+          │        Research Knowledge Base            │
+          └────────────────────┬─────────────────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Google Gemini     │
+                    │   Grounded Answer    │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │ Streamlit Response   │
+                    │ + Source References  │
+                    └──────────────────────┘
+```
+
+## 📂 Project Structure
 
 ```text
 AI-Research-Intelligence/
 │
 ├── app/
+│   ├── __init__.py
+│   │
 │   ├── api/
 │   │   ├── __init__.py
 │   │   └── research.py
@@ -84,16 +143,14 @@ AI-Research-Intelligence/
 │   ├── frontend/
 │   │   └── streamlit_app.py
 │   │
-│   ├── services/
-│   │   ├── __init__.py
-│   │   ├── chunking_service.py
-│   │   ├── document_service.py
-│   │   ├── llm_service.py
-│   │   ├── pdf_service.py
-│   │   ├── rag_service.py
-│   │   └── vector_store.py
-│   │
-│   └── main.py
+│   └── services/
+│       ├── __init__.py
+│       ├── chunking_service.py
+│       ├── document_service.py
+│       ├── llm_service.py
+│       ├── pdf_service.py
+│       ├── rag_service.py
+│       └── vector_store.py
 │
 ├── data/
 │   ├── chroma_db/
@@ -106,117 +163,244 @@ AI-Research-Intelligence/
 
 ## 🔄 How It Works
 
-1. User uploads a PDF research document.
-2. FastAPI receives and stores the document.
-3. PyMuPDF extracts text while preserving page numbers.
-4. Extracted text is divided into overlapping chunks.
-5. ChromaDB indexes the document chunks.
-6. User submits a research question.
-7. Relevant chunks are retrieved from the knowledge base.
-8. Gemini generates an answer using the retrieved research context.
-9. The application displays the answer together with document and page sources.
+### 1. Upload a PDF
+
+The user uploads a research paper or PDF document through the Streamlit dashboard.
+
+### 2. Extract Text
+
+PyMuPDF extracts readable text from each PDF page while preserving page numbers.
+
+### 3. Create Chunks
+
+The extracted text is divided into smaller overlapping chunks to improve retrieval quality.
+
+### 4. Store Knowledge
+
+The chunks and their metadata are stored in ChromaDB.
+
+Each chunk keeps information such as:
+
+* Document name
+* Page number
+* Extracted text
+
+### 5. Ask a Research Question
+
+The user enters a question about the uploaded research documents.
+
+### 6. Retrieve Relevant Information
+
+ChromaDB searches the indexed research knowledge base and retrieves the most relevant chunks.
+
+### 7. Generate an Answer
+
+The retrieved research content is sent to Google Gemini with instructions to answer only from the provided research context.
+
+### 8. Display Sources
+
+The application displays the generated answer together with the relevant document and page references.
+
+## 🔌 API Endpoints
+
+### Health Check
+
+```text
+GET /health
+```
+
+Returns:
+
+```json
+{
+  "status": "healthy"
+}
+```
+
+### Upload Document
+
+```text
+POST /research/upload
+```
+
+Uploads and indexes a PDF research document.
+
+### Ask a Research Question
+
+```text
+GET /research/ask?question=YOUR_QUESTION
+```
+
+Retrieves relevant research content and generates an AI-powered answer.
+
+### Research Statistics
+
+```text
+GET /research/stats
+```
+
+Returns:
+
+* Number of indexed documents
+* Number of indexed pages
+* Number of knowledge chunks
+
+### Indexed Documents
+
+```text
+GET /research/documents
+```
+
+Returns the list of indexed research documents.
 
 ## 🔐 Security
 
-* API keys are stored as environment variables.
-* `.env` files are excluded from Git.
-* Uploaded PDFs are excluded from Git.
-* ChromaDB data is excluded from Git.
-* Secrets are never stored in source code.
+API credentials are not stored in the source code.
+
+The Gemini API key is stored securely using environment variables / deployment secrets.
+
+The `.env` file is excluded from Git using `.gitignore`.
+
+```text
+.env
+.streamlit/secrets.toml
+```
+
+No API keys or private credentials are included in the public repository.
 
 ## 💻 Local Setup
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/AqsaBatool256/AI-Research-Intelligence.git
 cd AI-Research-Intelligence
 ```
 
-### 2. Create a virtual environment
+### 2. Create a Virtual Environment
 
 ```bash
 python -m venv .venv
 ```
 
-### 3. Activate the virtual environment on Windows
+### 3. Activate the Environment
+
+Windows PowerShell:
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-### 4. Install dependencies
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Configure the Gemini API key
+### 5. Configure the Gemini API Key
 
 Create a `.env` file in the project root:
 
-```env
-GEMINI_API_KEY=your_gemini_api_key
+```text
+GEMINI_API_KEY=your_api_key_here
 ```
 
-Never commit the `.env` file to GitHub.
+Do not commit this file to GitHub.
 
-### 6. Start the FastAPI backend
+### 6. Start the FastAPI Backend
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-### 7. Start the Streamlit frontend
+The backend will run locally at:
 
-Open another terminal, activate the virtual environment, and run:
+```text
+http://127.0.0.1:8000
+```
 
-```bash
+### 7. Start the Streamlit Frontend
+
+Open another terminal and run:
+
+```powershell
 streamlit run app/frontend/streamlit_app.py
 ```
 
+The Streamlit application will open in your browser.
+
 ## ☁️ Deployment
 
-The project is deployed using:
+### Backend
 
-* **Frontend:** Streamlit Community Cloud
-* **Backend:** Render
-* **Repository:** GitHub
+The FastAPI backend is deployed using Render.
 
-The FastAPI backend provides endpoints for:
+Production start command:
 
-* PDF document uploads
-* Research questions
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+The Gemini API key is configured securely in Render environment variables.
+
+### Frontend
+
+The Streamlit frontend is deployed using Streamlit Cloud.
+
+The frontend connects to the deployed FastAPI backend through the `BACKEND_URL` configuration.
+
+## 📊 Current Capabilities
+
+The platform currently supports:
+
+* PDF upload
+* PDF text extraction
+* Page-aware document processing
+* Text chunking
+* ChromaDB indexing
+* Semantic retrieval
+* Gemini-powered research question answering
+* Source references
+* Research document library
 * Knowledge-base statistics
-* Indexed document information
-* Health monitoring
-
-## 🔌 API Endpoints
-
-| Endpoint              | Method | Purpose                               |
-| --------------------- | ------ | ------------------------------------- |
-| `/`                   | GET    | API status                            |
-| `/health`             | GET    | Health check                          |
-| `/research/upload`    | POST   | Upload and index a PDF                |
-| `/research/ask`       | GET    | Ask a research question               |
-| `/research/stats`     | GET    | Get knowledge-base statistics         |
-| `/research/documents` | GET    | List indexed documents                |
-| `/docs`               | GET    | Interactive Swagger API documentation |
-
-## 🎯 Project Goal
-
-The goal of this project is to demonstrate how Retrieval-Augmented Generation (RAG) can be used to build an intelligent research assistant that answers questions from uploaded documents while maintaining traceability to the original research sources.
+* Public Streamlit deployment
+* Public FastAPI deployment
 
 ## 🔮 Future Improvements
 
-* Multi-document research comparison
-* Research paper summarization
-* Automatic keyword and topic extraction
-* Advanced citation highlighting
-* Research analytics dashboard
-* Persistent cloud vector storage
-* Improved document processing for scanned PDFs
-* Conversation history and research sessions
+Planned improvements include:
+
+* 📑 Automatic research paper summaries
+* 🏷️ Keyword and topic extraction
+* 📊 Research analytics dashboard
+* 📚 Multiple research collections
+* 🔎 Advanced document filtering
+* 🧠 Improved retrieval and reranking
+* 📌 More detailed page-level citations
+* 📈 Document comparison
+* 📝 Automatic literature review generation
+* 📊 Research trend analysis
+* 💬 Conversation history
+* 🔐 User authentication
+* 🎨 Additional UI animations and themes
+
+## 🎯 Project Goal
+
+The goal of this project is to demonstrate how modern AI techniques can transform large research documents into an interactive knowledge system.
+
+Instead of manually searching through long research papers, users can upload their documents and interact with their research knowledge base using natural language.
+
+The project demonstrates practical experience with:
+
+* Artificial Intelligence
+* Machine Learning
+* Generative AI
+* Retrieval-Augmented Generation
+* Vector Databases
+* Natural Language Processing
+* API Development
+* Document Processing
+* Cloud Deployment
 
 ## 👩‍💻 Author
 
@@ -229,5 +413,15 @@ Cloud Computing Learner
 
 ### Connect
 
-* GitHub: https://github.com/AqsaBatool256
-* LinkedIn: https://www.linkedin.com/in/aqsabatoolsaqib/
+GitHub:
+https://github.com/AqsaBatool256
+
+LinkedIn:
+https://www.linkedin.com/in/aqsabatoolsaqib/
+
+Portfolio:
+https://aqsabatool256.github.io/
+
+---
+
+⭐ If you find this project interesting, feel free to explore the repository and live demo.
