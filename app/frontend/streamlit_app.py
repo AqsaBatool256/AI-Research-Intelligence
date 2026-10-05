@@ -1,18 +1,442 @@
+import os
+
 import requests
 import streamlit as st
 
 
-BACKEND_URL = "http://127.0.0.1:8000"
+# ============================================================
+# BACKEND CONFIGURATION
+# ============================================================
+
+try:
+    BACKEND_URL = st.secrets["BACKEND_URL"]
+except (FileNotFoundError, KeyError):
+    BACKEND_URL = os.getenv(
+        "BACKEND_URL",
+        "http://127.0.0.1:8000",
+    )
+
+BACKEND_URL = BACKEND_URL.rstrip("/")
 
 
-# =========================
-# BACKEND HELPERS
-# =========================
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
+
+st.set_page_config(
+    page_title="AI Research Intelligence",
+    page_icon="🧠",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+
+# ============================================================
+# CUSTOM CSS
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+    /* =========================
+       MAIN BACKGROUND
+    ========================= */
+
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 10% 10%,
+                rgba(59, 130, 246, 0.10),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 90% 20%,
+                rgba(139, 92, 246, 0.10),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #050816 0%,
+                #0b1020 50%,
+                #080b16 100%
+            );
+
+        color: #f8fafc;
+    }
+
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    section[data-testid="stSidebar"] {
+        background:
+            linear-gradient(
+                180deg,
+                #080c18 0%,
+                #0d1324 100%
+            );
+
+        border-right:
+            1px solid rgba(255, 255, 255, 0.08);
+    }
+
+
+    /* =========================
+       MAIN CONTAINER
+    ========================= */
+
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+        max-width: 1400px;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+        padding: 35px;
+        border-radius: 24px;
+        margin-bottom: 25px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(37, 99, 235, 0.18),
+                rgba(124, 58, 237, 0.14)
+            );
+
+        border:
+            1px solid rgba(148, 163, 184, 0.15);
+
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.35);
+
+        animation:
+            fadeIn 0.8s ease;
+    }
+
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+
+        background:
+            linear-gradient(
+                90deg,
+                #60a5fa,
+                #a78bfa,
+                #22d3ee
+            );
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+
+    .hero-subtitle {
+        color: #cbd5e1;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        max-width: 900px;
+    }
+
+
+    /* =========================
+       GLASS CARDS
+    ========================= */
+
+    .glass-card {
+        background:
+            rgba(15, 23, 42, 0.72);
+
+        border:
+            1px solid rgba(148, 163, 184, 0.12);
+
+        border-radius: 20px;
+
+        padding: 22px;
+
+        margin-bottom: 20px;
+
+        box-shadow:
+            0 12px 40px rgba(0, 0, 0, 0.25);
+
+        backdrop-filter: blur(12px);
+
+        animation:
+            fadeIn 0.7s ease;
+    }
+
+
+    /* =========================
+       METRIC CARDS
+    ========================= */
+
+    .metric-card {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(30, 41, 59, 0.8),
+                rgba(15, 23, 42, 0.8)
+            );
+
+        border:
+            1px solid rgba(148, 163, 184, 0.12);
+
+        border-radius: 18px;
+
+        padding: 20px;
+
+        text-align: center;
+
+        box-shadow:
+            0 10px 35px rgba(0, 0, 0, 0.25);
+
+        transition:
+            transform 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    .metric-card:hover {
+        transform: translateY(-5px);
+
+        border-color:
+            rgba(96, 165, 250, 0.4);
+    }
+
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #60a5fa;
+    }
+
+
+    .metric-label {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+
+    /* =========================
+       SECTION TITLES
+    ========================= */
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 750;
+        color: #f8fafc;
+
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+
+
+    /* =========================
+       DOCUMENT CARDS
+    ========================= */
+
+    .document-card {
+        background:
+            rgba(15, 23, 42, 0.65);
+
+        border:
+            1px solid rgba(148, 163, 184, 0.12);
+
+        border-radius: 16px;
+
+        padding: 18px;
+
+        margin-bottom: 12px;
+
+        transition:
+            transform 0.25s ease,
+            background 0.25s ease;
+    }
+
+
+    .document-card:hover {
+        transform: translateX(5px);
+
+        background:
+            rgba(30, 41, 59, 0.8);
+    }
+
+
+    .document-name {
+        font-weight: 700;
+        color: #e2e8f0;
+        font-size: 1rem;
+    }
+
+
+    .document-meta {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    }
+
+
+    /* =========================
+       SOURCE CARDS
+    ========================= */
+
+    .source-card {
+        background:
+            rgba(30, 41, 59, 0.65);
+
+        border-left:
+            3px solid #60a5fa;
+
+        border-radius: 12px;
+
+        padding: 15px;
+
+        margin-top: 10px;
+
+        color: #cbd5e1;
+
+        animation:
+            slideUp 0.5s ease;
+    }
+
+
+    .source-header {
+        color: #93c5fd;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .status-online {
+        display: inline-block;
+
+        padding: 6px 12px;
+
+        border-radius: 999px;
+
+        background:
+            rgba(34, 197, 94, 0.12);
+
+        border:
+            1px solid rgba(34, 197, 94, 0.25);
+
+        color: #86efac;
+
+        font-size: 0.8rem;
+
+        font-weight: 600;
+    }
+
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .stButton > button {
+        border-radius: 12px;
+
+        border:
+            1px solid rgba(96, 165, 250, 0.25);
+
+        background:
+            linear-gradient(
+                135deg,
+                #2563eb,
+                #7c3aed
+            );
+
+        color: white;
+
+        font-weight: 700;
+
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+
+    .stButton > button:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+
+    /* =========================
+       ANIMATIONS
+    ========================= */
+
+    @keyframes fadeIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    }
+
+
+    @keyframes slideUp {
+
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer {
+        text-align: center;
+
+        color: #64748b;
+
+        padding: 30px 0 10px;
+
+        font-size: 0.85rem;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ============================================================
+# BACKEND FUNCTIONS
+# ============================================================
 
 
 def get_research_stats():
-    """Fetch current research knowledge base statistics."""
-
+    """Get research knowledge-base statistics."""
     try:
         response = requests.get(
             f"{BACKEND_URL}/research/stats",
@@ -33,8 +457,7 @@ def get_research_stats():
 
 
 def get_indexed_documents():
-    """Fetch indexed research documents."""
-
+    """Get indexed research documents."""
     try:
         response = requests.get(
             f"{BACKEND_URL}/research/documents",
@@ -53,686 +476,205 @@ def get_indexed_documents():
     return []
 
 
+def upload_document(uploaded_file):
+    """Upload and index a PDF."""
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/research/upload",
+            files={
+                "file": (
+                    uploaded_file.name,
+                    uploaded_file.getvalue(),
+                    "application/pdf",
+                )
+            },
+            timeout=120,
+        )
+
+        if response.status_code == 200:
+            return response.json()
+
+        try:
+            return {"error": response.json()}
+        except Exception:
+            return {"error": response.text}
+
+    except requests.exceptions.RequestException as error:
+        return {"error": str(error)}
+
+
+def ask_research_question(question):
+    """Ask a question about indexed research."""
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/research/ask",
+            params={"question": question},
+            timeout=120,
+        )
+
+        if response.status_code == 200:
+            return response.json()
+
+        try:
+            return {"error": response.json()}
+        except Exception:
+            return {"error": response.text}
+
+    except requests.exceptions.RequestException as error:
+        return {"error": str(error)}
+
+
+# ============================================================
+# LOAD CURRENT DATA
+# ============================================================
+
 stats = get_research_stats()
+
 indexed_documents = get_indexed_documents()
 
 
-# =========================
-# PAGE CONFIGURATION
-# =========================
-
-st.set_page_config(
-    page_title="ResearchAI",
-    page_icon="🧠",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-
-# =========================
-# CUSTOM STYLES
-# =========================
-
-st.html(
-    """
-    <style>
-
-    .stApp {
-        background:
-            radial-gradient(
-                circle at 10% 10%,
-                rgba(99, 102, 241, 0.16),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 90% 15%,
-                rgba(168, 85, 247, 0.14),
-                transparent 30%
-            ),
-            #080b14;
-
-        color: #f8fafc;
-    }
-
-
-    #MainMenu {
-        visibility: hidden;
-    }
-
-
-    footer {
-        visibility: hidden;
-    }
-
-
-    .block-container {
-        max-width: 1400px;
-
-        padding-top: 2rem;
-
-        padding-bottom: 3rem;
-    }
-
-
-    section[data-testid="stSidebar"] {
-        background: #0b1020;
-
-        border-right:
-            1px solid
-            rgba(148, 163, 184, 0.12);
-    }
-
-
-    /* =========================
-       HERO
-       ========================= */
-
-    .hero-icon {
-        font-size: 3.5rem;
-
-        animation:
-            floating
-            4s
-            ease-in-out
-            infinite;
-
-        margin-bottom: 0.5rem;
-    }
-
-
-    @keyframes floating {
-
-        0% {
-            transform:
-                translateY(0px);
-        }
-
-        50% {
-            transform:
-                translateY(-10px);
-        }
-
-        100% {
-            transform:
-                translateY(0px);
-        }
-    }
-
-
-    .hero-title {
-
-        font-size: 3.2rem;
-
-        font-weight: 800;
-
-        line-height: 1.1;
-
-        letter-spacing: -1px;
-
-        background:
-            linear-gradient(
-                90deg,
-                #ffffff,
-                #a5b4fc,
-                #c084fc
-            );
-
-        -webkit-background-clip: text;
-
-        -webkit-text-fill-color: transparent;
-
-        margin-bottom: 0.5rem;
-    }
-
-
-    .hero-subtitle {
-
-        color: #94a3b8;
-
-        font-size: 1.15rem;
-
-        margin-bottom: 2rem;
-    }
-
-
-    /* =========================
-       METRIC CARDS
-       ========================= */
-
-    .metric-card {
-
-        background:
-            rgba(
-                15,
-                23,
-                42,
-                0.78
-            );
-
-        border:
-            1px solid
-            rgba(
-                148,
-                163,
-                184,
-                0.13
-            );
-
-        border-radius: 18px;
-
-        padding: 1.35rem;
-
-        min-height: 125px;
-
-        transition:
-            all
-            0.3s
-            ease;
-
-        box-sizing: border-box;
-    }
-
-
-    .metric-card:hover {
-
-        transform:
-            translateY(-6px);
-
-        border-color:
-            rgba(
-                129,
-                140,
-                248,
-                0.55
-            );
-
-        box-shadow:
-            0 15px 40px
-            rgba(
-                79,
-                70,
-                229,
-                0.18
-            );
-    }
-
-
-    .metric-icon {
-
-        font-size: 1.8rem;
-
-        margin-bottom: 0.35rem;
-    }
-
-
-    .metric-value {
-
-        font-size: 1.8rem;
-
-        font-weight: 750;
-
-        color: #f8fafc;
-    }
-
-
-    .metric-label {
-
-        color: #94a3b8;
-
-        font-size: 0.9rem;
-
-        margin-top: 0.15rem;
-    }
-
-
-    /* =========================
-       SECTIONS
-       ========================= */
-
-    .section-title {
-
-        font-size: 1.5rem;
-
-        font-weight: 700;
-
-        color: #f8fafc;
-
-        margin-top: 2rem;
-
-        margin-bottom: 0.8rem;
-    }
-
-
-    /* =========================
-       UPLOAD CARD
-       ========================= */
-
-    .upload-card {
-
-        background:
-            linear-gradient(
-                135deg,
-                rgba(
-                    30,
-                    41,
-                    59,
-                    0.82
-                ),
-                rgba(
-                    15,
-                    23,
-                    42,
-                    0.72
-                )
-            );
-
-        border:
-            1px dashed
-            rgba(
-                129,
-                140,
-                248,
-                0.55
-            );
-
-        border-radius: 22px;
-
-        padding: 2rem;
-
-        text-align: center;
-
-        margin-bottom: 1rem;
-
-        transition:
-            all
-            0.3s
-            ease;
-    }
-
-
-    .upload-card:hover {
-
-        border-color:
-            rgba(
-                192,
-                132,
-                252,
-                0.8
-            );
-
-        box-shadow:
-            0 15px 45px
-            rgba(
-                99,
-                102,
-                241,
-                0.12
-            );
-
-        transform:
-            translateY(-2px);
-    }
-
-
-    .upload-icon {
-
-        font-size: 3.5rem;
-
-        margin-bottom: 0.7rem;
-    }
-
-
-    .upload-title {
-
-        font-size: 1.3rem;
-
-        font-weight: 700;
-
-        color: #f8fafc;
-
-        margin-bottom: 0.4rem;
-    }
-
-
-    .upload-description {
-
-        color: #94a3b8;
-
-        font-size: 0.95rem;
-
-        line-height: 1.6;
-    }
-
-
-    /* =========================
-       DOCUMENT CARDS
-       ========================= */
-
-    .document-card {
-
-        background:
-            rgba(
-                15,
-                23,
-                42,
-                0.78
-            );
-
-        border:
-            1px solid
-            rgba(
-                148,
-                163,
-                184,
-                0.13
-            );
-
-        border-radius: 18px;
-
-        padding: 1.2rem;
-
-        margin-bottom: 0.8rem;
-
-        transition:
-            all
-            0.3s
-            ease;
-    }
-
-
-    .document-card:hover {
-
-        transform:
-            translateY(-4px);
-
-        border-color:
-            rgba(
-                129,
-                140,
-                248,
-                0.45
-            );
-
-        box-shadow:
-            0 12px 35px
-            rgba(
-                79,
-                70,
-                229,
-                0.12
-            );
-    }
-
-
-    .document-name {
-
-        font-size: 1.05rem;
-
-        font-weight: 700;
-
-        color: #f8fafc;
-
-        margin-bottom: 0.45rem;
-    }
-
-
-    .document-meta {
-
-        color: #94a3b8;
-
-        font-size: 0.9rem;
-    }
-
-
-    .document-status {
-
-        color: #86efac;
-
-        font-size: 0.9rem;
-
-        font-weight: 600;
-    }
-
-
-    /* =========================
-       ASSISTANT
-       ========================= */
-
-    .assistant-card {
-
-        background:
-            rgba(
-                15,
-                23,
-                42,
-                0.72
-            );
-
-        border:
-            1px solid
-            rgba(
-                148,
-                163,
-                184,
-                0.12
-            );
-
-        border-radius: 20px;
-
-        padding: 1.5rem;
-
-        margin-top: 0.5rem;
-
-        color: #f8fafc;
-    }
-
-
-    .assistant-description {
-
-        color: #94a3b8;
-
-        line-height: 1.6;
-
-        margin-top: 0.5rem;
-    }
-
-
-    /* =========================
-       SOURCE CARDS
-       ========================= */
-
-    .source-card {
-
-        background:
-            rgba(
-                15,
-                23,
-                42,
-                0.72
-            );
-
-        border:
-            1px solid
-            rgba(
-                129,
-                140,
-                248,
-                0.18
-            );
-
-        border-radius: 14px;
-
-        padding: 1rem;
-
-        margin-bottom: 0.8rem;
-    }
-
-
-    .source-title {
-
-        font-weight: 700;
-
-        color: #e2e8f0;
-    }
-
-
-    .source-page {
-
-        color: #a5b4fc;
-
-        font-size: 0.9rem;
-
-        margin-top: 0.25rem;
-    }
-
-
-    /* =========================
-       FOOTER
-       ========================= */
-
-    .footer-text {
-
-        text-align: center;
-
-        color: #64748b;
-
-        font-size: 0.85rem;
-
-        margin-top: 1.5rem;
-    }
-
-    </style>
-    """
-)
-
-
-# =========================
+# ============================================================
 # SIDEBAR
-# =========================
+# ============================================================
 
 with st.sidebar:
-    st.markdown("## 🧠 ResearchAI")
+    st.markdown(
+        """
+        <div style="
+            text-align:center;
+            padding:15px 0 25px;
+        ">
 
-    st.caption("AI Research Intelligence Platform")
+            <div style="
+                font-size:3rem;
+            ">
+                🧠
+            </div>
 
-    st.divider()
+            <h2 style="
+                margin-bottom:5px;
+            ">
+                Research AI
+            </h2>
 
-    st.markdown("### Navigation")
+            <p style="
+                color:#94a3b8;
+                font-size:0.9rem;
+            ">
+                Intelligence Platform
+            </p>
 
-    st.button(
-        "📊 Dashboard",
-        use_container_width=True,
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.button(
-        "📄 Documents",
-        use_container_width=True,
+    st.markdown(
+        '<span class="status-online">● Platform Ready</span>',
+        unsafe_allow_html=True,
     )
 
-    st.button(
-        "💬 Research Assistant",
-        use_container_width=True,
+    st.markdown("---")
+
+    st.markdown("### ⚙️ System")
+
+    st.caption(f"Backend: `{BACKEND_URL}`")
+
+    st.caption("FastAPI + Gemini + ChromaDB")
+
+    st.markdown("---")
+
+    st.markdown("### 🚀 Capabilities")
+
+    st.markdown(
+        """
+        - 📄 PDF Research Analysis
+        - 🔎 Semantic Search
+        - 🤖 AI Research Answers
+        - 📚 Multi-Document Knowledge Base
+        - 📑 Page-Level Sources
+        - 📊 Knowledge Statistics
+        """
     )
 
-    st.button(
-        "📈 Research Insights",
-        use_container_width=True,
-    )
 
-    st.divider()
-
-    st.markdown("### Platform")
-
-    st.caption(
-        "Upload research papers and transform "
-        "them into searchable AI-powered knowledge."
-    )
-
-
-# =========================
+# ============================================================
 # HERO
-# =========================
+# ============================================================
 
-st.html(
+st.markdown(
     """
-    <div class="hero-icon">
-        🧠
-    </div>
+    <div class="hero">
 
-    <div class="hero-title">
-        Research Intelligence Platform
-    </div>
+        <div class="hero-title">
+            🧠 AI Research Intelligence Platform
+        </div>
 
-    <div class="hero-subtitle">
-        Transform research papers into searchable,
-        AI-powered knowledge.
+        <div class="hero-subtitle">
+            Transform research papers and technical documents
+            into an intelligent, searchable knowledge base.
+            Upload PDFs, ask questions, and receive grounded
+            AI answers with traceable document and page sources.
+        </div>
+
     </div>
-    """
+    """,
+    unsafe_allow_html=True,
 )
 
 
-# =========================
-# DASHBOARD METRICS
-# =========================
+# ============================================================
+# METRICS
+# ============================================================
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 
 with col1:
-    st.html(
+    st.markdown(
         f"""
         <div class="metric-card">
 
-            <div class="metric-icon">
-                📄
-            </div>
-
             <div class="metric-value">
-                {stats["documents"]}
+                {stats.get("documents", 0)}
             </div>
 
             <div class="metric-label">
-                Documents
+                Research Documents
             </div>
 
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
 
 with col2:
-    st.html(
+    st.markdown(
         f"""
         <div class="metric-card">
 
-            <div class="metric-icon">
-                📑
-            </div>
-
             <div class="metric-value">
-                {stats["pages"]}
+                {stats.get("pages", 0)}
             </div>
 
             <div class="metric-label">
-                Pages Indexed
+                Indexed Pages
             </div>
 
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
 
 with col3:
-    st.html(
+    st.markdown(
         f"""
         <div class="metric-card">
 
-            <div class="metric-icon">
-                🧩
-            </div>
-
             <div class="metric-value">
-                {stats["chunks"]}
+                {stats.get("chunks", 0)}
             </div>
 
             <div class="metric-label">
@@ -740,316 +682,246 @@ with col3:
             </div>
 
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
 
-with col4:
-    st.html(
-        """
-        <div class="metric-card">
-
-            <div class="metric-icon">
-                ✨
-            </div>
-
-            <div class="metric-value">
-                AI
-            </div>
-
-            <div class="metric-label">
-                Research Engine
-            </div>
-
-        </div>
-        """
-    )
+st.markdown("")
 
 
-# =========================
-# DOCUMENT UPLOAD
-# =========================
+# ============================================================
+# PDF UPLOAD
+# ============================================================
 
-st.html(
+st.markdown(
+    '<div class="section-title">📄 Add Research Document</div>',
+    unsafe_allow_html=True,
+)
+
+st.markdown(
     """
-    <div class="section-title">
-        📚 Add Research Documents
-    </div>
+    <div class="glass-card">
 
-    <div class="upload-card">
-
-        <div class="upload-icon">
-            📄
-        </div>
-
-        <div class="upload-title">
-            Build your research knowledge base
-        </div>
-
-        <div class="upload-description">
-            Upload PDF research papers, reports,
-            theses, or technical documents.
-        </div>
+        <p style="color:#94a3b8;">
+            Upload a research paper, technical report,
+            academic document, or other text-based PDF.
+        </p>
 
     </div>
-    """
+    """,
+    unsafe_allow_html=True,
 )
 
 
 uploaded_file = st.file_uploader(
-    "Upload a PDF",
+    "Choose a PDF document",
     type=["pdf"],
+    help=("Upload a research PDF to extract, index, and search its content."),
 )
 
 
 if uploaded_file is not None:
-    st.info(f"📄 Selected: {uploaded_file.name}")
-
     if st.button(
-        "⚡ Index Research Document",
-        type="primary",
+        "🚀 Analyze & Index Document",
         use_container_width=True,
     ):
-        with st.spinner("Extracting, chunking, and indexing your research paper..."):
-            try:
-                response = requests.post(
-                    f"{BACKEND_URL}/research/upload",
-                    files={
-                        "file": (
-                            uploaded_file.name,
-                            uploaded_file.getvalue(),
-                            "application/pdf",
-                        )
-                    },
-                    timeout=120,
-                )
+        with st.spinner("Extracting, chunking, and indexing your research document..."):
+            result = upload_document(uploaded_file)
 
-                if response.status_code == 200:
-                    result = response.json()
+        if "error" in result:
+            st.error(f"Upload failed: {result['error']}")
 
-                    st.success("✅ Research document indexed successfully!")
+        else:
+            st.success("Research document indexed successfully!")
 
-                    st.session_state["last_upload"] = result
+            st.session_state["last_upload"] = result
 
-                    st.rerun()
-
-                else:
-                    st.error(f"❌ Upload failed (HTTP {response.status_code})")
-
-                    st.code(response.text)
-
-            except requests.exceptions.ConnectionError:
-                st.error(
-                    "❌ Could not connect to the ResearchAI "
-                    "backend. Make sure FastAPI is running "
-                    "on http://127.0.0.1:8000."
-                )
-
-            except requests.exceptions.Timeout:
-                st.error(
-                    "⏳ The backend took too long to process the research document."
-                )
-
-            except requests.exceptions.RequestException as error:
-                st.error("❌ An error occurred while uploading the document.")
-
-                st.code(str(error))
+            st.rerun()
 
 
-# =========================
+# ============================================================
 # LAST UPLOAD
-# =========================
+# ============================================================
 
 if "last_upload" in st.session_state:
-    result = st.session_state["last_upload"]
+    last_upload = st.session_state["last_upload"]
 
-    st.success(f"📚 {result['document']} is ready for research.")
+    st.markdown(
+        '<div class="section-title">✅ Last Indexed Document</div>',
+        unsafe_allow_html=True,
+    )
 
-    result_col1, result_col2, result_col3 = st.columns(3)
+    st.markdown(
+        f"""
+        <div class="glass-card">
 
-    with result_col1:
-        st.metric(
-            "Pages",
-            result["pages"],
-        )
+            <h3 style="margin-bottom:8px;">
+                📄 {last_upload.get("document", "Unknown")}
+            </h3>
 
-    with result_col2:
-        st.metric(
-            "Knowledge Chunks",
-            result["chunks"],
-        )
+            <p style="
+                color:#94a3b8;
+                margin-bottom:0;
+            ">
+                {last_upload.get("pages", 0)} pages
+                •
+                {last_upload.get("chunks", 0)} knowledge chunks
+                •
+                Successfully indexed
+            </p>
 
-    with result_col3:
-        st.metric(
-            "Status",
-            "Indexed",
-        )
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
-# =========================
+# ============================================================
 # DOCUMENT LIBRARY
-# =========================
+# ============================================================
 
-st.html(
-    """
-    <div class="section-title">
-        📂 Indexed Research Documents
-    </div>
-    """
+st.markdown(
+    '<div class="section-title">📚 Research Document Library</div>',
+    unsafe_allow_html=True,
 )
 
 
 if indexed_documents:
     for document in indexed_documents:
-        document_col1, document_col2 = st.columns([4, 1])
+        st.markdown(
+            f"""
+            <div class="document-card">
 
-        with document_col1:
-            st.html(
-                f"""
-                <div class="document-card">
-
-                    <div class="document-name">
-                        📄 {document["document"]}
-                    </div>
-
-                    <div class="document-meta">
-                        {document["pages"]} page(s)
-                    </div>
-
+                <div class="document-name">
+                    📄 {document.get("document", "Unknown")}
                 </div>
-                """
-            )
 
-        with document_col2:
-            st.html(
-                f"""
-                <div class="document-card">
-
-                    <div class="document-status">
-                        🟢 {document["status"]}
-                    </div>
-
+                <div class="document-meta">
+                    {document.get("pages", 0)} pages
+                    •
+                    {document.get("status", "Unknown")}
                 </div>
-                """
-            )
+
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 else:
     st.info("No research documents have been indexed yet.")
 
 
-# =========================
+# ============================================================
 # RESEARCH ASSISTANT
-# =========================
+# ============================================================
 
-st.html(
-    """
-    <div class="section-title">
-        💬 Ask Your Research
-    </div>
-
-    <div class="assistant-card">
-
-        <strong>
-            Ask questions about your research documents
-        </strong>
-
-        <div class="assistant-description">
-
-            ResearchAI retrieves relevant passages and
-            generates grounded answers with source citations.
-
-        </div>
-
-    </div>
-    """
+st.markdown(
+    '<div class="section-title">🤖 Research Assistant</div>',
+    unsafe_allow_html=True,
 )
 
 
-question = st.text_input(
-    "Research question",
-    placeholder=("Example: What methodology does this research paper use?"),
+question = st.text_area(
+    "Ask a question about your uploaded research",
+    placeholder=("Example: What are the main findings of the research?"),
+    height=120,
 )
 
 
 if st.button(
-    "🔍 Analyze Research",
-    type="primary",
+    "🔎 Ask Research Assistant",
     use_container_width=True,
 ):
     if not question.strip():
         st.warning("Please enter a research question.")
 
+    elif stats.get("documents", 0) == 0:
+        st.warning("Please upload and index at least one research document first.")
+
     else:
-        with st.spinner("Searching your research knowledge base..."):
-            try:
-                response = requests.get(
-                    f"{BACKEND_URL}/research/ask",
-                    params={"question": question},
-                    timeout=120,
-                )
+        with st.spinner(
+            "Searching the research knowledge base and generating an answer..."
+        ):
+            result = ask_research_question(question.strip())
 
-                if response.status_code == 200:
-                    result = response.json()
+        if "error" in result:
+            st.error(f"Research request failed: {result['error']}")
 
-                    st.markdown("### 💡 Research Answer")
+        else:
+            st.markdown("### 💡 AI Answer")
 
-                    st.write(result["answer"])
+            st.markdown(
+                f"""
+                <div class="glass-card">
 
-                    sources = result.get("sources", [])
+                    <div style="
+                        font-size:1.05rem;
+                        line-height:1.8;
+                        color:#e2e8f0;
+                    ">
+                        {result.get("answer", "No answer returned.")}
+                    </div>
 
-                    if sources:
-                        st.markdown("### 📚 Sources")
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-                        for source in sources:
-                            st.html(
-                                f"""
-                                <div class="source-card">
+            sources = result.get(
+                "sources",
+                [],
+            )
 
-                                    <div class="source-title">
-                                        📄 {source["document"]}
-                                    </div>
+            if sources:
+                st.markdown("### 📑 Research Sources")
 
-                                    <div class="source-page">
-                                        Page {source["page"]}
-                                    </div>
+                for source in sources:
+                    st.markdown(
+                        f"""
+                        <div class="source-card">
 
-                                </div>
-                                """
-                            )
+                            <div class="source-header">
+                                📄 {source.get("document", "Unknown")}
+                                • Page {source.get("page", "?")}
+                            </div>
 
-                else:
-                    st.error(
-                        f"❌ Research request failed (HTTP {response.status_code})"
+                            <div>
+                                {source.get("text", "")}
+                            </div>
+
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
                     )
 
-                    st.code(response.text)
-
-            except requests.exceptions.ConnectionError:
-                st.error(
-                    "❌ Could not connect to the ResearchAI "
-                    "backend. Make sure FastAPI is running."
-                )
-
-            except requests.exceptions.Timeout:
-                st.error("⏳ The research request took too long.")
-
-            except requests.exceptions.RequestException as error:
-                st.error("❌ An error occurred while contacting the research engine.")
-
-                st.code(str(error))
+            else:
+                st.info("No source passages were returned.")
 
 
-# =========================
+# ============================================================
 # FOOTER
-# =========================
+# ============================================================
 
-st.divider()
-
-
-st.html(
+st.markdown(
     """
-    <div class="footer-text">
-        ResearchAI • Powered by RAG + ChromaDB + Gemini
+    <div class="footer">
+
+        AI Research Intelligence Platform
+
+        •
+
+        Built with Python, Streamlit, FastAPI,
+        ChromaDB, PyMuPDF & Gemini
+
+        <br><br>
+
+        Developed by
+        <strong>
+            Aqsa Batool Saqib
+        </strong>
+
     </div>
-    """
+    """,
+    unsafe_allow_html=True,
 )
