@@ -1,32 +1,31 @@
-````markdown
 # 🧠 AI Research Intelligence Platform
 
 An AI-powered research assistant that allows users to upload PDF research documents, index their content, ask questions, and receive grounded AI answers with document and page-level source citations.
 
 ## ✨ Features
 
-- 📄 Upload and process research PDFs
-- 🔎 Extract text while preserving page numbers
-- ✂️ Intelligent text chunking
-- 🧠 ChromaDB vector search
-- 🤖 Gemini-powered research answers
-- 📚 Multiple research document support
-- 📑 Document and page-level source citations
-- 📊 Research knowledge-base statistics
-- 📂 Indexed research document library
-- ⚡ FastAPI backend
-- 🎨 Interactive Streamlit dashboard
+* 📄 Upload and process research PDFs
+* 🔎 Extract text while preserving page numbers
+* ✂️ Intelligent text chunking
+* 🧠 ChromaDB vector search
+* 🤖 Gemini-powered research answers
+* 📚 Multiple research document support
+* 📑 Document and page-level source citations
+* 📊 Research knowledge-base statistics
+* 📂 Indexed research document library
+* ⚡ FastAPI backend
+* 🎨 Interactive Streamlit dashboard
 
 ## 🛠️ Tech Stack
 
-- Python
-- Streamlit
-- FastAPI
-- Google Gemini API
-- ChromaDB
-- PyMuPDF
-- Python-dotenv
-- Requests
+* Python
+* Streamlit
+* FastAPI
+* Google Gemini API
+* ChromaDB
+* PyMuPDF
+* Python-dotenv
+* Requests
 
 ## 🏗️ Architecture
 
@@ -52,7 +51,7 @@ FastAPI Backend
           │
           ▼
    Document + Page Sources
-````
+```
 
 ## 🚀 Live Demo
 
@@ -232,8 +231,3 @@ Cloud Computing Learner
 
 * GitHub: https://github.com/AqsaBatool256
 * LinkedIn: https://www.linkedin.com/in/aqsabatoolsaqib/
-
-```
-
-**This is the version I recommend committing.** Save it as `README.md`. Then we can do the Git commands to commit and push it.
-```
